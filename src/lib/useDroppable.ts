@@ -1,4 +1,4 @@
-import { useState, type DragEventHandler } from 'react';
+import { useRef, useState, type DragEventHandler } from 'react';
 import { getChannel } from './channel';
 import { useCrossWindowDrag } from './useCrossWindowDrag';
 import { isAccepted, parsePayload } from './protocol';
@@ -16,6 +16,7 @@ export interface UseDroppableArgs {
 export interface UseDroppableResult {
   /** Spread onto the drop-zone element. */
   listeners: {
+    onDragEnter: DragEventHandler;
     onDragOver: DragEventHandler;
     onDragLeave: DragEventHandler;
     onDrop: DragEventHandler;
@@ -31,25 +32,38 @@ export function useDroppable({ id, accept, onDrop }: UseDroppableArgs): UseDropp
   const [isOver, setIsOver] = useState(false);
   const { activeDrag, remoteDragging } = useCrossWindowDrag();
 
+  // dragenter/dragleave fire for every nested child (the cards inside a column),
+  // so a naive dragleave handler flickers `isOver` off mid-hover. We count
+  // enters minus leaves and treat the zone as "over" while the depth is > 0.
+  const enterDepth = useRef(0);
+
   // During `dragover`/`dragenter` the browser protects the payload contents for
   // security — we can see the *types* but not read the data. So we gate on the
   // MIME type here and do the authoritative `accept` check on drop, where the
   // data is finally readable.
   const carriesOurPayload = (e: React.DragEvent) => e.dataTransfer.types.includes(MIME_TYPE);
 
+  const onDragEnter: DragEventHandler = (e) => {
+    if (!carriesOurPayload(e)) return;
+    e.preventDefault();
+    enterDepth.current += 1;
+    if (!isOver) setIsOver(true);
+  };
+
   const onDragOver: DragEventHandler = (e) => {
     if (!carriesOurPayload(e)) return;
     e.preventDefault(); // required to become a valid drop target
     e.dataTransfer.dropEffect = 'move';
-    if (!isOver) setIsOver(true);
   };
 
   const onDragLeave: DragEventHandler = () => {
-    if (isOver) setIsOver(false);
+    enterDepth.current = Math.max(0, enterDepth.current - 1);
+    if (enterDepth.current === 0 && isOver) setIsOver(false);
   };
 
   const handleDrop: DragEventHandler = (e) => {
     e.preventDefault();
+    enterDepth.current = 0;
     setIsOver(false);
 
     const payload = parsePayload(e.dataTransfer.getData(MIME_TYPE));
@@ -71,7 +85,7 @@ export function useDroppable({ id, accept, onDrop }: UseDroppableArgs): UseDropp
   };
 
   return {
-    listeners: { onDragOver, onDragLeave, onDrop: handleDrop },
+    listeners: { onDragEnter, onDragOver, onDragLeave, onDrop: handleDrop },
     isOver,
     isRemoteDragActive:
       remoteDragging && activeDrag !== null && isAccepted(activeDrag.type, accept),

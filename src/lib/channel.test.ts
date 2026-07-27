@@ -1,9 +1,13 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { getWindowId } from './channel';
 
 describe('getWindowId', () => {
   beforeEach(() => {
     sessionStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it('returns a stable id across calls within a window', () => {
@@ -15,5 +19,12 @@ describe('getWindowId', () => {
   it('persists the id in sessionStorage', () => {
     const id = getWindowId();
     expect(sessionStorage.getItem('cwdnd-window-id')).toBe(id);
+  });
+
+  it('returns a throwaway id without crashing when there is no storage (SSR)', () => {
+    vi.stubGlobal('sessionStorage', undefined);
+    const id = getWindowId();
+    expect(typeof id).toBe('string');
+    expect(id.length).toBeGreaterThan(0);
   });
 });

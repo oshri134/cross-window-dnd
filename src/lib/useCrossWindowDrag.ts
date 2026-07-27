@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import { getChannel } from './channel';
+import { getActiveDrag, subscribeDragSession } from './dragSession';
 import type { DragPayload } from './types';
 
 export interface CrossWindowDragState {
@@ -10,27 +11,21 @@ export interface CrossWindowDragState {
 }
 
 /**
- * Subscribes to the shared channel and exposes the current *remote* drag session.
- * Boards use this to light up their drop zones the instant another frame/tab
- * begins a drag — before any pointer has entered them.
+ * Reads the shared remote-drag session (see dragSession.ts). Boards use this to
+ * light up their drop zones the instant another frame/tab begins a drag — before
+ * any pointer has entered them.
+ *
+ * Backed by a single module-level store via `useSyncExternalStore`, so every
+ * consumer shares one channel subscription and one timer. `getServerSnapshot`
+ * returns null, keeping it SSR-safe.
  */
 export function useCrossWindowDrag(): CrossWindowDragState {
   const channel = getChannel();
-  const [activeDrag, setActiveDrag] = useState<DragPayload | null>(null);
-
-  useEffect(() => {
-    return channel.subscribe((msg) => {
-      switch (msg.kind) {
-        case 'dragstart':
-          setActiveDrag(msg.payload);
-          break;
-        case 'dragend':
-        case 'item-moved':
-          setActiveDrag(null);
-          break;
-      }
-    });
-  }, [channel]);
+  const activeDrag = useSyncExternalStore(
+    subscribeDragSession,
+    getActiveDrag,
+    () => null,
+  );
 
   return {
     activeDrag,

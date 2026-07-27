@@ -1,6 +1,6 @@
 {
   "name": "cross-window-dnd",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Native HTML5 drag-and-drop across windows, iframes and tabs, coordinated with BroadcastChannel. Tiny React hooks.",
   "keywords": [

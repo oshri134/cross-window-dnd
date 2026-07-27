@@ -1,0 +1,67 @@
+{
+  "name": "cross-window-dnd",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Native HTML5 drag-and-drop across windows, iframes and tabs, coordinated with BroadcastChannel. Tiny React hooks.",
+  "keywords": [
+    "drag-and-drop",
+    "dnd",
+    "cross-window",
+    "cross-tab",
+    "iframe",
+    "broadcastchannel",
+    "react",
+    "hooks",
+    "html5"
+  ],
+  "license": "MIT",
+  "author": "osheri134",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oshri134/cross-window-dnd.git"
+  },
+  "homepage": "https://github.com/oshri134/cross-window-dnd#readme",
+  "bugs": {
+    "url": "https://github.com/oshri134/cross-window-dnd/issues"
+  },
+  "sideEffects": false,
+  "main": "./dist/cross-window-dnd.cjs",
+  "module": "./dist/cross-window-dnd.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/cross-window-dnd.js",
+      "require": "./dist/cross-window-dnd.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "build:lib": "vite build --config vite.lib.config.ts",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run test && npm run build:lib"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^29.1.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0",
+    "vite-plugin-dts": "^5.0.3",
+    "vitest": "^4.1.10"
+  }
+}

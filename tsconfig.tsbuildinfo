@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/demo/board.tsx","./src/demo/card.tsx","./src/demo/boardstate.ts","./src/demo/seed.ts","./src/lib/channel.ts","./src/lib/index.ts","./src/lib/protocol.ts","./src/lib/types.ts","./src/lib/usecrosswindowdrag.ts","./src/lib/usedraggable.ts","./src/lib/usedroppable.ts","./vite.config.ts"],"version":"5.9.3"}

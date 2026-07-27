@@ -1,5 +1,8 @@
 # Cross-window Drag & Drop — POC
 
+[![CI](https://github.com/oshri134/cross-window-dnd/actions/workflows/ci.yml/badge.svg)](https://github.com/oshri134/cross-window-dnd/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/cross-window-dnd.svg)](https://www.npmjs.com/package/cross-window-dnd)
+
 Proof that **native HTML5 Drag and Drop** — not pointer/mouse tracking — is the
 right engine for dragging items **between separate windows, iframes, and browser
 tabs**, with **`BroadcastChannel`** as a side-channel for state/UX sync.
@@ -72,6 +75,25 @@ npm run build    # tsc -b + vite build
 The whole demo is one bundle; the "route" comes from the query string
 (`?view=board&pane=a|b|tab`) so every frame/tab shares one **origin** — required
 for `BroadcastChannel`.
+
+## Tests
+
+```bash
+npm test         # vitest run (jsdom)
+npm run test:watch
+```
+
+Native DnD is driven by the OS compositor and can't be scripted from a headless
+runner, so the **interactions** are verified manually (see the checklist below).
+What *is* unit-tested is the pure logic underneath, extracted to be DOM-free:
+
+- `src/lib/protocol.ts` — `parsePayload` (validates the `dataTransfer` payload, so
+  a stray drag from another app can't crash a drop handler) and `isAccepted`.
+- `src/demo/boardState.ts` — `applyDrop` / `applyRemoteMove`: the local-move,
+  remote-arrival, and source-removal state transitions, including the race guard.
+
+CI (GitHub Actions) runs `npm test` and `npm run build:lib` on every push and PR;
+tagged releases (`v*`) publish to npm with provenance.
 
 ## Verify checklist
 

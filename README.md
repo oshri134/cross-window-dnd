@@ -3,6 +3,9 @@
 [![CI](https://github.com/oshri134/cross-window-dnd/actions/workflows/ci.yml/badge.svg)](https://github.com/oshri134/cross-window-dnd/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/cross-window-dnd.svg)](https://www.npmjs.com/package/cross-window-dnd)
 
+**▶ Live demo: <https://cross-window-dnd.vercel.app>** — drag a card between the
+two frames, or click *Open second tab* and drag across real browser tabs.
+
 Proof that **native HTML5 Drag and Drop** — not pointer/mouse tracking — is the
 right engine for dragging items **between separate windows, iframes, and browser
 tabs**, with **`BroadcastChannel`** as a side-channel for state/UX sync.
